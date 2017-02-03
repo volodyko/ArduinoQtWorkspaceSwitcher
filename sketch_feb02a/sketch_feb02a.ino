@@ -1,33 +1,49 @@
+#include <SoftwareSerial.h>
+SoftwareSerial BTserial(3, 4); // RX | TX
 
 
-int val = 0;
+
 static bool isClicked = false;
 void setup() {
   // put your setup code here, to run once:
   pinMode(2, INPUT_PULLUP);
-  pinMode(13, OUTPUT);
+
   Serial.begin(9600);
+  Serial.println("Enter AT commands:");
+  // HC-06 default serial speed is 9600
+  BTserial.begin(9600);
+
 }
 
 void loop() {
-  int sensorVal = digitalRead(2);
 
-  val = analogRead(2);
-  if (sensorVal == HIGH) {
-    digitalWrite(13, LOW);
-    isClicked = false;
 
-  } else {
-    digitalWrite(13, HIGH);
-    if (!isClicked) {
-      isClicked = true;
-      Serial.print("openW");
-      Serial.flush();
-    }
-    Serial.print("pot: ");
-    Serial.print(val);
-    Serial.flush();
-
+  if (BTserial.available()) {
+    Serial.write(BTserial.read());
   }
-  delay(100);
+  
+  if (Serial.available()) {
+    BTserial.write(Serial.read());
+  }
+
+    int sensorVal = digitalRead(2);
+  
+    if (sensorVal == HIGH) {
+      if (isClicked) {
+        isClicked = false;
+        Serial.print("closeW");
+        Serial.print("\n");
+        Serial.flush();
+      }
+  
+    } else {
+      if (!isClicked) {
+        isClicked = true;
+        Serial.print("openW");
+        Serial.print("\n");
+        Serial.flush();
+      }
+  
+    }
+    //delay(100);
 }

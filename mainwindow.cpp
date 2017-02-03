@@ -72,11 +72,11 @@ void MainWindow::readSerial(){
     serialBuffer.append(serialData);
     if(serialData.contains("\n")){
         ui->lblCount->setText(serialBuffer);
-        qDebug() << serialBuffer;
         Xevent event(eventType::NONE);
         if(serialBuffer.contains("openW")){
-             qDebug() << "OK";
             event.setType(eventType::SUPER_S);
+        }else if(serialBuffer.contains("closeW")){
+            event.setType(eventType::ENTER);
         }
         callbackFunc(event);
         serialBuffer.clear();
